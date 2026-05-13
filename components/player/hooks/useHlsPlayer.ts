@@ -93,7 +93,7 @@ export function useHlsPlayer({
                     maxFragRetries:6,
 
                     // ABR Settings
-                    abrEwmaDefaultEstimate: 4000000,
+                    abrEwmaDefaultEstimate: 3000000,
                     abrEwmaFastLive: 3,
                     abrEwmaSlowLive: 9,
                     abrEwmaFastVoD: 3,

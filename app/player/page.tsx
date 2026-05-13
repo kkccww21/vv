@@ -16,6 +16,7 @@ import { useHistory } from '@/lib/store/history-store';
 import { FavoritesSidebar } from '@/components/favorites/FavoritesSidebar';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { PlayerNavbar } from '@/components/player/PlayerNavbar';
+import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 import { settingsStore } from '@/lib/store/settings-store';
 import { premiumModeSettingsStore } from '@/lib/store/premium-mode-settings';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
@@ -37,6 +38,7 @@ function PlayerContent() {
   const router = useRouter();
   const isPremium = searchParams.get('premium') === '1';
   const { addToHistory } = useHistory(isPremium);
+  const isMobile = useIsMobile();
 
   const videoId = searchParams.get('id');
   const source = searchParams.get('source');
@@ -467,8 +469,8 @@ function PlayerContent() {
                 />
               </div>
 
-              {/* Favorite Button for current video */}
-              {videoData && videoId && (
+              {/* Favorite Button for current video - Desktop only */}
+              {videoData && videoId && !isMobile && (
                 <div className="flex items-center gap-3 mt-4">
                   <FavoriteButton
                     videoId={videoId}

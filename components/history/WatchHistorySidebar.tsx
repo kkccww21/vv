@@ -14,6 +14,7 @@ import { HistoryList } from './HistoryList';
 import { HistoryFooter } from './HistoryFooter';
 import { trapFocus } from '@/lib/accessibility/focus-management';
 import { useFloatingButtonPosition } from '@/lib/hooks/useFloatingButtonPosition';
+import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 
 export function WatchHistorySidebar({ isPremium = false }: { isPremium?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ export function WatchHistorySidebar({ isPremium = false }: { isPremium?: boolean
     isClearAll?: boolean;
   }>({ isOpen: false });
   const { viewingHistory, removeFromHistory, clearHistory } = useHistory(isPremium);
+  const isMobile = useIsMobile();
   const sidebarRef = useRef<HTMLElement>(null);
   const cleanupFocusTrapRef = useRef<(() => void) | null>(null);
   const {
@@ -89,20 +91,22 @@ export function WatchHistorySidebar({ isPremium = false }: { isPremium?: boolean
 
   return (
     <>
-      {/* Toggle Button */}
-      <button
-        onClick={(event) => {
-          if (consumeSyntheticClick(event)) return;
-          setIsOpen(true);
-        }}
-        onPointerDown={onPointerDown}
-        style={floatingStyle}
-        className="fixed z-40 bg-[var(--glass-bg)] backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] p-3 hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none"
-        aria-label="打开观看历史"
-        title="点击打开观看历史，拖动可调整位置"
-      >
-        <Icons.History size={24} className="text-[var(--text-color)]" />
-      </button>
+      {/* Toggle Button - Desktop only */}
+      {!isMobile && (
+        <button
+          onClick={(event) => {
+            if (consumeSyntheticClick(event)) return;
+            setIsOpen(true);
+          }}
+          onPointerDown={onPointerDown}
+          style={floatingStyle}
+          className="fixed z-40 bg-[var(--glass-bg)] backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] p-3 hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none"
+          aria-label="打开观看历史"
+          title="点击打开观看历史，拖动可调整位置"
+        >
+          <Icons.History size={24} className="text-[var(--text-color)]" />
+        </button>
+      )}
 
       {/* Backdrop */}
       {isOpen && (
