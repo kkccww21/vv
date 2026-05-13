@@ -82,22 +82,25 @@ export function useHlsPlayer({
                     lowLatencyMode: false,
 
                     // Buffer Settings
-                    maxBufferLength: 120,
-                    maxMaxBufferLength: 240,
-                    maxBufferSize: 120 * 1000 * 1000,
-                    maxBufferHole: 0.5,
+                    maxBufferLength: 180,
+                    maxMaxBufferLength: 480,
+                    maxBufferSize: 180 * 1000 * 1000,
+                    maxBufferHole: 2.0,
 
-                    // Start with more buffer
+                    // Prefetch & Loading
                     startFragPrefetch: true,
+                    maxLoadingDelay: 1,
+                    maxFragRetries:6,
 
                     // ABR Settings
-                    abrEwmaDefaultEstimate: 500000,
+                    abrEwmaDefaultEstimate: 4000000,
                     abrEwmaFastLive: 3,
                     abrEwmaSlowLive: 9,
                     abrEwmaFastVoD: 3,
                     abrEwmaSlowVoD: 9,
-                    abrBandWidthFactor: 0.8,
-                    abrBandWidthUpFactor: 0.7,
+                    abrBandWidthFactor: 0.9,
+                    abrBandWidthUpFactor: 0.8,
+                    abrMaxWithRealBitrate: true,
 
                     // Loading Settings
                     fragLoadingMaxRetry: 6,
@@ -114,6 +117,15 @@ export function useHlsPlayer({
                     fragLoadingTimeOut: 20000,
                     manifestLoadingTimeOut: 10000,
                     levelLoadingTimeOut: 10000,
+
+                    // Gap & Stall Recovery
+                    highBufferWatchdogPeriod: 2,
+                    nudgeOffset: 0.1,
+                    nudgeMaxRetry: 5,
+
+                    // Error Resilience
+                    appendErrorMaxRetry: 5,
+                    stretchShortVideoTrack: true,
 
                     // Backbuffer
                     backBufferLength: 90,
