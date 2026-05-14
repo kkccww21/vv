@@ -245,10 +245,49 @@ export function DesktopVideoPlayer({
       setFullscreenClock(formatter.format(new Date()));
     };
 
+    // 立即更新时钟
     updateClock();
-    const interval = window.setInterval(updateClock, 30000);
-    return () => window.clearInterval(interval);
+
+    // 计算到下一分钟的精确延迟
+    const getNextMinuteDelay = () => {
+      const now = new Date();
+      const nextMinute = new Date(now);
+      nextMinute.setMinutes(now.getMinutes() + 1);
+      nextMinute.setSeconds(0);
+      nextMinute.setMilliseconds(0);
+      return nextMinute.getTime() - now.getTime();
+    };
+
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const scheduleNextUpdate = () => {
+      const delay = getNextMinuteDelay();
+      timeoutId = setTimeout(() => {
+        updateClock();
+        scheduleNextUpdate();
+      }, delay);
+    };
+
+    scheduleNextUpdate();
+
+    return () => {
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [data.isFullscreen]);
+
+  // 当显示控制栏时立即更新时钟
+  React.useEffect(() => {
+    if (data.isFullscreen && data.showControls) {
+      const formatter = new Intl.DateTimeFormat('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setFullscreenClock(formatter.format(new Date()));
+    }
+  }, [data.isFullscreen, data.showControls]);
 
   // Initialize HLS Player
   useHlsPlayer({
@@ -329,6 +368,7 @@ export function DesktopVideoPlayer({
     handleLoadedMetadata,
     handleProgressEvent,
     handleVideoError,
+    toggleFullscreen,
   } = logic;
 
   const cycleWebFullscreenSize = React.useCallback(() => {
@@ -337,6 +377,15 @@ export function DesktopVideoPlayer({
       return WEB_FULLSCREEN_SIZE_ORDER[(currentIndex + 1) % WEB_FULLSCREEN_SIZE_ORDER.length];
     });
   }, []);
+
+  // Handle double click to toggle fullscreen on desktop
+  const handleDoubleClick = React.useCallback((e: React.MouseEvent) => {
+    if (!isMobile) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleFullscreen();
+    }
+  }, [isMobile, toggleFullscreen]);
 
   const webFullscreenStyle = React.useMemo<React.CSSProperties | undefined>(() => {
     if (data.fullscreenMode !== 'window') return undefined;
@@ -389,6 +438,7 @@ export function DesktopVideoPlayer({
       style={webFullscreenStyle}
       onMouseMove={() => { handleMouseMove(); }}
       onMouseLeave={() => isPlaying && setShowControls(false)}
+      onDoubleClick={handleDoubleClick}
     >
       <div className={stageClassName}>
         {/* Clipping Wrapper for video and overlays - Restores the 'Liquid Glass' rounded look */}
