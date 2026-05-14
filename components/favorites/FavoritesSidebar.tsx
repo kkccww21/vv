@@ -101,7 +101,7 @@ export function FavoritesSidebar({ isPremium = false }: { isPremium?: boolean })
                 }}
                 onPointerDown={onPointerDown}
                 style={floatingStyle}
-                className={`fixed z-40 backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none ${
+                className={`hidden sm:block fixed z-40 backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none ${
                     isMobile
                         ? 'bg-black/30 p-2 size-9'
                         : 'bg-[var(--glass-bg)] p-3 size-12'
@@ -147,7 +147,9 @@ export function FavoritesSidebar({ isPremium = false }: { isPremium?: boolean })
             </aside>
 
             {/* Watch History Sidebar - Right side */}
-            <WatchHistorySidebar isPremium={isPremium} />
+            <div className="hidden sm:block">
+                <WatchHistorySidebar isPremium={isPremium} />
+            </div>
 
             {/* Confirm Dialog */}
             <ConfirmDialog

@@ -28,6 +28,8 @@ export function useDoubleTap({
     const singleTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleTap = (e: React.TouchEvent<HTMLVideoElement>) => {
+        e.preventDefault();
+
         const currentTime = Date.now();
         const videoElement = e.currentTarget;
         const touch = e.touches[0] || e.changedTouches[0];
@@ -62,8 +64,6 @@ export function useDoubleTap({
 
         // Double tap detected (within 300ms on the same side)
         if (timeDiff < 300 && sameSide) {
-            e.preventDefault();
-
             if (side === 'left') {
                 onDoubleTapLeft();
             } else {

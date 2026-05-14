@@ -371,7 +371,9 @@ export function DesktopVideoPlayer({
             onCanPlay={() => setIsLoading(false)}
             onClick={!isMobile ? () => {
               togglePlay();
-            } : undefined}
+            } : (e) => {
+              e.preventDefault();
+            }}
             onTouchStart={isMobile ? handleTap : undefined}
             {...LEGACY_INLINE_VIDEO_PROPS} // Legacy iOS support
           />

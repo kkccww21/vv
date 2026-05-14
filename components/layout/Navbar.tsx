@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { HistoryButton } from '@/components/history/HistoryButton';
 import { useSiteIcon } from '@/components/SiteIconProvider';
 import { Icons } from '@/components/ui/Icon';
 import { siteConfig } from '@/lib/config/site-config';
@@ -68,7 +69,7 @@ export function Navbar({ onReset, isPremiumMode = false }: NavbarProps) {
 
                         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                             {/* IPTV Link - only show if user has iptv_access or no auth configured */}
-                            {iptvEnabled && hasPermission('iptv_access') && (
+                            {false&&iptvEnabled && hasPermission('iptv_access') && (
                             <Link
                                 href="/iptv"
                                 className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-[var(--radius-full)] bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-color)] hover:bg-[color-mix(in_srgb,var(--accent-color)_10%,transparent)] transition-all duration-200 cursor-pointer"
@@ -121,6 +122,9 @@ export function Navbar({ onReset, isPremiumMode = false }: NavbarProps) {
                             >
                                 <Icons.Heart size={20} />
                             </Link>
+                            <div className="flex sm:hidden">
+                                <HistoryButton isPremium={isPremiumMode} size={20} />
+                            </div>
                             <Link
                                 href={settingsHref}
                                 className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-[var(--radius-full)] bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-color)] hover:bg-[color-mix(in_srgb,var(--accent-color)_10%,transparent)] transition-all duration-200 cursor-pointer"

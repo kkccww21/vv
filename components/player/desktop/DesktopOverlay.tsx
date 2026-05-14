@@ -91,7 +91,7 @@ export function DesktopOverlay({
     return (
         <>
             {/* More Menu (Top Left) - Moved slightly down and lower z-index to stay below navbar */}
-            <div className={`absolute top-8 left-6 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
+            <div className={`absolute top-2 left-4 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
                 <DesktopMoreMenu
                     showMoreMenu={showMoreMenu}
                     isPremium={isPremium}
@@ -124,7 +124,7 @@ export function DesktopOverlay({
             )}
 
             {/* Speed Menu (Top Right) - Moved slightly down and lower z-index */}
-            <div className={`absolute top-8 right-6 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
+            <div className={`absolute top-2 right-4 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
                 <DesktopSpeedMenu
                     showSpeedMenu={showSpeedMenu}
                     playbackRate={playbackRate}
@@ -180,7 +180,7 @@ export function DesktopOverlay({
                     pointerEvents: showNavButtons ? 'auto' : 'none',
                     justifyContent: 'center',
                     alignItems: isMobile ? 'flex-start' : 'center',
-                    paddingTop: isMobile ? '28%' : undefined
+                    paddingTop: isMobile ? '18%' : undefined
                 }}
             >
                 <button
@@ -195,7 +195,6 @@ export function DesktopOverlay({
                 </button>
             </div>
 
-            {/* Next Button (Method: Skip Forward) - Refined to use FastForward icon */}
             <div
                 className={`absolute right-0 top-0 bottom-0 flex items-center justify-center p-4 md:p-8 transition-opacity duration-300 z-10 ${showNavButtons ? 'opacity-100' : 'opacity-0'
                     }`}
@@ -203,7 +202,7 @@ export function DesktopOverlay({
                     pointerEvents: showNavButtons ? 'auto' : 'none',
                     justifyContent: 'center',
                     alignItems: isMobile ? 'flex-start' : 'center',
-                    paddingTop: isMobile ? '28%' : undefined
+                    paddingTop: isMobile ? '18%' : undefined
                 }}
             >
                 <button
