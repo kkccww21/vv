@@ -41,6 +41,48 @@ const LEGACY_INLINE_VIDEO_PROPS: LegacyInlineVideoProps = {
   'webkit-playsinline': 'true',
 };
 
+// Resolution Badge Component with delayed fade out
+interface ResolutionBadgeProps {
+  videoResolution: any;
+  showControls: boolean;
+}
+
+function ResolutionBadge({ videoResolution, showControls }: ResolutionBadgeProps) {
+  const [show, setShow] = React.useState(true);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    if (showControls) {
+      // Show immediately when controls are visible
+      setShow(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    } else {
+      // Delay hide by 1 second when controls are hidden
+      timeoutRef.current = setTimeout(() => {
+        setShow(false);
+      }, 1000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [showControls]);
+
+  return (
+    <div className={`absolute top-3 left-3 z-20 pointer-events-none transition-opacity duration-300 ${show ? 'opacity-80' : 'opacity-0'}`}>
+      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-white ${videoResolution.color}`}>
+        {videoResolution.label}
+        <span className="font-normal opacity-80">{videoResolution.width}x{videoResolution.height}</span>
+      </span>
+    </div>
+  );
+}
+
 function readViewportMetrics(): ViewportMetrics {
   if (typeof window === 'undefined') {
     return { width: 0, height: 0 };
@@ -369,9 +411,7 @@ export function DesktopVideoPlayer({
             onError={handleVideoError}
             onWaiting={() => setIsLoading(true)}
             onCanPlay={() => setIsLoading(false)}
-            onClick={!isMobile ? () => {
-              togglePlay();
-            } : (e) => {
+            onClick={(e) => {
               e.preventDefault();
             }}
             onTouchStart={isMobile ? handleTap : undefined}
@@ -388,14 +428,9 @@ export function DesktopVideoPlayer({
             />
           )}
 
-          {/* Video Resolution Badge - follows controls bar visibility */}
+          {/* Video Resolution Badge - with delayed fade out */}
           {videoResolution && (
-            <div className={`absolute top-3 left-3 z-20 pointer-events-none transition-opacity duration-300 ${data.showControls ? 'opacity-80' : 'opacity-0'}`}>
-              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-white ${videoResolution.color}`}>
-                {videoResolution.label}
-                <span className="font-normal opacity-80">{videoResolution.width}x{videoResolution.height}</span>
-              </span>
-            </div>
+            <ResolutionBadge videoResolution={videoResolution} showControls={data.showControls} />
           )}
 
           <DesktopOverlayWrapper

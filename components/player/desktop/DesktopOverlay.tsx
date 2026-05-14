@@ -85,7 +85,6 @@ export function DesktopOverlay({
 }: DesktopOverlayProps) {
     // Show navigation buttons when controls are visible or when paused (controls usually show when paused anyway)
     const showNavButtons = showControls || !isPlaying;
-    const showFullscreenClock = showControls || !isPlaying;
     const isMobile = useIsMobile();
 
     return (
@@ -107,12 +106,11 @@ export function DesktopOverlay({
                 />
             </div>
 
-            {isFullscreen && fullscreenClock && (
-                <div
-                    className={`absolute top-8 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${showFullscreenClock ? 'opacity-100' : 'opacity-0'}`}
-                    style={{ pointerEvents: 'none' }}
-                >
-                    <div className="min-w-[88px] px-4 py-2 rounded-full bg-black/45 backdrop-blur-md border border-white/15 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+            {/* Clock and Speed Menu (Top Right) */}
+            <div className={`absolute top-2 right-4 z-40 flex items-center gap-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
+                {/* System Clock */}
+                {isFullscreen && fullscreenClock && (
+                    <div className="min-w-[80px] px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-center">
                         <div className="flex items-center justify-center gap-2 text-white">
                             <Icons.Clock size={14} className="opacity-80" />
                             <span className="text-sm font-semibold tracking-[0.18em] tabular-nums">
@@ -120,11 +118,8 @@ export function DesktopOverlay({
                             </span>
                         </div>
                     </div>
-                </div>
-            )}
-
-            {/* Speed Menu (Top Right) - Moved slightly down and lower z-index */}
-            <div className={`absolute top-2 right-4 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
+                )}
+                {/* Speed Menu */}
                 <DesktopSpeedMenu
                     showSpeedMenu={showSpeedMenu}
                     playbackRate={playbackRate}
@@ -217,15 +212,25 @@ export function DesktopOverlay({
                 </button>
             </div>
 
-            {/* Center Play Button (when paused) */}
-            {!isPlaying && !isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            {/* Center Play/Pause Button */}
+            {(showControls || !isPlaying) && !isLoading && (
+                <div 
+                    className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center p-4 md:p-8 pointer-events-none z-10"
+                    style={{ 
+                        alignItems: isMobile ? 'flex-start' : 'center',
+                        paddingTop: isMobile ? '16%' : undefined
+                    }}
+                >
                     <button
                         onClick={onTogglePlay}
                         className="pointer-events-auto w-12 h-12 md:w-20 md:h-20 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
-                        aria-label="播放"
+                        aria-label={isPlaying ? "暂停" : "播放"}
                     >
-                        <Icons.Play className="w-6 h-6 md:w-10 md:h-10 text-white ml-1" />
+                        {isPlaying ? (
+                            <Icons.Pause className="w-6 h-6 md:w-10 md:h-10 text-white" />
+                        ) : (
+                            <Icons.Play className="w-6 h-6 md:w-10 md:h-10 text-white ml-1" />
+                        )}
                     </button>
                 </div>
             )}
