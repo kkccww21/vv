@@ -13,8 +13,9 @@ import { useResolutionProbe } from '@/lib/hooks/useResolutionProbe';
 import { setCachedResolution } from '@/lib/player/resolution-cache';
 import { useVideoPlayer } from '@/lib/hooks/useVideoPlayer';
 import { useHistory } from '@/lib/store/history-store';
-import { FavoritesSidebar } from '@/components/favorites/FavoritesSidebar';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesButton } from '@/components/favorites/FavoritesButton';
+import { HistoryButton } from '@/components/history/HistoryButton';
 import { PlayerNavbar } from '@/components/player/PlayerNavbar';
 import { settingsStore } from '@/lib/store/settings-store';
 import { premiumModeSettingsStore } from '@/lib/store/premium-mode-settings';
@@ -467,7 +468,7 @@ function PlayerContent() {
                 />
               </div>
 
-              {/* Favorite Button for current video */}
+              {/* Favorite and History Buttons */}
               {videoData && videoId && (
                 <div className="flex items-center gap-3 mt-4">
                   <FavoriteButton
@@ -484,7 +485,17 @@ function PlayerContent() {
                     isPremium={isPremium}
                   />
                   <span className="text-sm text-[var(--text-color-secondary)]">
-                    收藏这个视频
+                    收藏
+                  </span>
+                  <div className="w-px h-6 bg-[var(--glass-border)]" />
+                  <FavoritesButton size={20} isPremium={isPremium} />
+                  <span className="text-sm text-[var(--text-color-secondary)]">
+                    我的收藏
+                  </span>
+                  <div className="w-px h-6 bg-[var(--glass-border)]" />
+                  <HistoryButton size={20} isPremium={isPremium} />
+                  <span className="text-sm text-[var(--text-color-secondary)]">
+                    观看历史
                   </span>
                 </div>
               )}
@@ -559,13 +570,10 @@ function PlayerContent() {
               </div>
             </div>
           </div>
-        )}
-      </main>
-
-      {/* Favorites Sidebar - Left */}
-      <FavoritesSidebar isPremium={isPremium} />
-    </div>
-  );
+      )}
+    </main>
+  </div>
+);
 }
 
 export default function PlayerPage() {
