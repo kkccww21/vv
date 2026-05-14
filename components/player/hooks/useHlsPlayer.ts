@@ -85,7 +85,7 @@ export function useHlsPlayer({
                     maxBufferLength: 180,
                     maxMaxBufferLength: 480,
                     maxBufferSize: 180 * 1000 * 1000,
-                    maxBufferHole: 2.0,
+                    maxBufferHole: 1.5,
 
                     // Prefetch & Loading
                     startFragPrefetch: true,

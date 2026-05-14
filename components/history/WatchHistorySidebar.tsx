@@ -91,22 +91,24 @@ export function WatchHistorySidebar({ isPremium = false }: { isPremium?: boolean
 
   return (
     <>
-      {/* Toggle Button - Desktop only */}
-      {!isMobile && (
-        <button
-          onClick={(event) => {
-            if (consumeSyntheticClick(event)) return;
-            setIsOpen(true);
-          }}
-          onPointerDown={onPointerDown}
-          style={floatingStyle}
-          className="fixed z-40 bg-[var(--glass-bg)] backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] p-3 hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none"
-          aria-label="打开观看历史"
-          title="点击打开观看历史，拖动可调整位置"
-        >
-          <Icons.History size={24} className="text-[var(--text-color)]" />
-        </button>
-      )}
+      {/* Toggle Button */}
+      <button
+        onClick={(event) => {
+          if (consumeSyntheticClick(event)) return;
+          setIsOpen(true);
+        }}
+        onPointerDown={onPointerDown}
+        style={floatingStyle}
+        className={`fixed z-40 backdrop-blur-[8px] saturate-[120%] border border-[var(--glass-border)] rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] hover:scale-105 transition-transform duration-200 cursor-pointer touch-none select-none ${
+          isMobile
+            ? 'bg-black/30 p-2 size-9'
+            : 'bg-[var(--glass-bg)] p-3 size-12'
+        }`}
+        aria-label="打开观看历史"
+        title="点击打开观看历史，拖动可调整位置"
+      >
+        <Icons.History size={isMobile ? 18 : 24} className={`text-[var(--text-color)] ${isMobile ? 'opacity-70' : ''}`} />
+      </button>
 
       {/* Backdrop */}
       {isOpen && (

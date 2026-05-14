@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icons } from '@/components/ui/Icon';
+import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 
 import { DesktopMoreMenu } from './DesktopMoreMenu';
 import { DesktopSpeedMenu } from './DesktopSpeedMenu';
@@ -85,6 +86,7 @@ export function DesktopOverlay({
     // Show navigation buttons when controls are visible or when paused (controls usually show when paused anyway)
     const showNavButtons = showControls || !isPlaying;
     const showFullscreenClock = showControls || !isPlaying;
+    const isMobile = useIsMobile();
 
     return (
         <>
@@ -174,7 +176,12 @@ export function DesktopOverlay({
             <div
                 className={`absolute left-0 top-0 bottom-0 flex items-center justify-center p-4 md:p-8 transition-opacity duration-300 z-10 ${showNavButtons ? 'opacity-100' : 'opacity-0'
                     }`}
-                style={{ pointerEvents: showNavButtons ? 'auto' : 'none' }}
+                style={{ 
+                    pointerEvents: showNavButtons ? 'auto' : 'none',
+                    justifyContent: 'center',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    paddingTop: isMobile ? '28%' : undefined
+                }}
             >
                 <button
                     onClick={(e) => {
@@ -192,7 +199,12 @@ export function DesktopOverlay({
             <div
                 className={`absolute right-0 top-0 bottom-0 flex items-center justify-center p-4 md:p-8 transition-opacity duration-300 z-10 ${showNavButtons ? 'opacity-100' : 'opacity-0'
                     }`}
-                style={{ pointerEvents: showNavButtons ? 'auto' : 'none' }}
+                style={{ 
+                    pointerEvents: showNavButtons ? 'auto' : 'none',
+                    justifyContent: 'center',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    paddingTop: isMobile ? '28%' : undefined
+                }}
             >
                 <button
                     onClick={(e) => {
