@@ -30,27 +30,23 @@ export function useDoubleTap({
     const singleTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const getTapZone = (x: number, y: number, width: number, height: number): TapZone => {
-        if (isFullscreen) {
-            const verticalCenter = y > height * 0.25 && y < height * 0.75;
-            const horizontalSide = x < width * 0.25 || x > width * 0.75;
-            if (verticalCenter && horizontalSide) {
-                return x < width / 2 ? 'left' : 'right';
-            }
-            return 'center';
+        const horizontalSide = x < width * 0.25 || x > width * 0.75;
+        if (horizontalSide) {
+            return x < width / 2 ? 'left' : 'right';
         }
-        return x < width / 2 ? 'left' : 'right';
+        return 'center';
     };
 
-    const handleTap = (e: React.TouchEvent<HTMLVideoElement>) => {
+    const handleTap = (e: React.TouchEvent<HTMLElement>) => {
         e.preventDefault();
 
         const currentTime = Date.now();
-        const videoElement = e.currentTarget;
+        const element = e.currentTarget;
         const touch = e.touches[0] || e.changedTouches[0];
 
-        if (!touch || !videoElement) return;
+        if (!touch || !element) return;
 
-        const rect = videoElement.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
         const width = rect.width;

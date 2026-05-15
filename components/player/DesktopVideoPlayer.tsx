@@ -14,6 +14,9 @@ import { usePlayerSettings } from './hooks/usePlayerSettings';
 import { useDanmaku } from './hooks/useDanmaku';
 import { useIsIOS, useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 import { useDoubleTap } from '@/lib/hooks/mobile/useDoubleTap';
+import { useBrightnessGesture } from './hooks/useBrightnessGesture';
+import { useVolumeGesture } from './hooks/useVolumeGesture';
+import { Icons } from '@/components/ui/Icon';
 import { settingsStore, DEFAULT_SEEK_STEP_SECONDS } from '@/lib/store/settings-store';
 import { premiumModeSettingsStore } from '@/lib/store/premium-mode-settings';
 import './web-fullscreen.css';
@@ -440,9 +443,7 @@ export function DesktopVideoPlayer({
       handleMouseMove();
     },
     onDoubleTapCenter: () => {
-      if (data.isFullscreen) {
-        toggleFullscreen();
-      }
+      toggleFullscreen();
     },
     onSkipContinueLeft: () => {
       logic.skipBackward();
@@ -455,6 +456,53 @@ export function DesktopVideoPlayer({
     isSkipModeActive: data.showSkipForwardIndicator || data.showSkipBackwardIndicator,
     isFullscreen: data.isFullscreen,
   });
+
+  // Brightness gesture for fullscreen
+  const {
+    brightness,
+    showBrightnessIndicator,
+    handleBrightnessTouchStart,
+    handleBrightnessTouchMove,
+    handleBrightnessTouchEnd,
+    isBrightnessGestureActive,
+  } = useBrightnessGesture(data.isFullscreen);
+
+  // Volume gesture for fullscreen
+  const {
+    showVolumeIndicator,
+    handleVolumeTouchStart,
+    handleVolumeTouchMove,
+    handleVolumeTouchEnd,
+    isVolumeGestureActive,
+  } = useVolumeGesture(data.isFullscreen, data.volume, actions.setVolume, actions.setIsMuted, refs.videoRef);
+
+  const brightnessPercent = Math.round((brightness / 1.5) * 100);
+  const volumePercent = Math.round(data.volume * 100);
+
+  // Combined touch handler for container (handles tap, brightness and volume gestures)
+  const handleContainerTouchStart = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, input, [role="button"], [data-control]')) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    handleBrightnessTouchStart(e, rect.width);
+    handleVolumeTouchStart(e, rect.width);
+  }, [handleBrightnessTouchStart, handleVolumeTouchStart]);
+
+  const handleContainerTouchMove = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    handleBrightnessTouchMove(e, rect.height);
+    handleVolumeTouchMove(e, rect.height);
+  }, [handleBrightnessTouchMove, handleVolumeTouchMove]);
+
+  const handleContainerTouchEnd = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, input, [role="button"], [data-control]')) return;
+    handleBrightnessTouchEnd();
+    handleVolumeTouchEnd();
+    if (!isBrightnessGestureActive() && !isVolumeGestureActive()) {
+      handleTap(e);
+    }
+  }, [handleBrightnessTouchEnd, handleVolumeTouchEnd, isBrightnessGestureActive, isVolumeGestureActive, handleTap]);
 
   return (
     <div
@@ -470,6 +518,9 @@ export function DesktopVideoPlayer({
       }}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onDoubleClick={handleDoubleClick}
+      onTouchStart={handleContainerTouchStart}
+      onTouchMove={handleContainerTouchMove}
+      onTouchEnd={handleContainerTouchEnd}
     >
       <div className={stageClassName}>
         {/* Clipping Wrapper for video and overlays - Restores the 'Liquid Glass' rounded look */}
@@ -480,10 +531,11 @@ export function DesktopVideoPlayer({
           <video
             ref={videoRef}
             className="w-full h-full object-contain"
+            style={{ filter: brightness !== 1 ? `brightness(${brightness})` : undefined }}
             poster={poster}
             x-webkit-airplay="allow"
-            playsInline={true} // Crucial for iOS custom fullscreen to work without native player taking over
-            controls={false} // Explicitly disable native controls
+            playsInline={true}
+            controls={false}
             onPlay={handlePlay}
             onPause={handlePause}
             onTimeUpdate={handleTimeUpdateEvent}
@@ -498,8 +550,7 @@ export function DesktopVideoPlayer({
                 handleTouchToggleControls();
               }
             }}
-            onTouchStart={isMobile ? handleTap : undefined}
-            {...LEGACY_INLINE_VIDEO_PROPS} // Legacy iOS support
+            {...LEGACY_INLINE_VIDEO_PROPS}
           />
 
           {/* Danmaku Canvas */}
@@ -512,9 +563,48 @@ export function DesktopVideoPlayer({
             />
           )}
 
-          {/* Video Resolution Badge - with delayed fade out */}
           {videoResolution && (
             <ResolutionBadge videoResolution={videoResolution} showControls={data.showControls} />
+          )}
+
+          {showBrightnessIndicator && data.isFullscreen && (
+            <div className="absolute left-8 top-1/2 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-2">
+              <div className="bg-black/60 backdrop-blur-md rounded-2xl px-4 py-3 flex flex-col items-center gap-2 min-w-[56px]">
+                {brightness <= 0.5 ? (
+                  <Icons.SunDim size={22} className="text-white/90" />
+                ) : (
+                  <Icons.Sun size={22} className="text-white/90" />
+                )}
+                <div className="w-1 h-24 bg-white/20 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 left-0 right-0 bg-white/90 rounded-full"
+                    style={{ height: `${brightnessPercent}%` }}
+                  />
+                </div>
+                <span className="text-white text-xs font-medium tabular-nums">{brightnessPercent}%</span>
+              </div>
+            </div>
+          )}
+
+          {showVolumeIndicator && data.isFullscreen && (
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-2">
+              <div className="bg-black/60 backdrop-blur-md rounded-2xl px-4 py-3 flex flex-col items-center gap-2 min-w-[56px]">
+                {data.volume === 0 ? (
+                  <Icons.VolumeX size={22} className="text-white/90" />
+                ) : data.volume < 0.5 ? (
+                  <Icons.Volume1 size={22} className="text-white/90" />
+                ) : (
+                  <Icons.Volume2 size={22} className="text-white/90" />
+                )}
+                <div className="w-1 h-24 bg-white/20 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 left-0 right-0 bg-white/90 rounded-full"
+                    style={{ height: `${volumePercent}%` }}
+                  />
+                </div>
+                <span className="text-white text-xs font-medium tabular-nums">{volumePercent}%</span>
+              </div>
+            </div>
           )}
 
           <DesktopOverlayWrapper
