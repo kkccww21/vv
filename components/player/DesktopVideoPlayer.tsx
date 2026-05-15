@@ -16,6 +16,7 @@ import { useIsIOS, useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 import { useDoubleTap } from '@/lib/hooks/mobile/useDoubleTap';
 import { useBrightnessGesture } from './hooks/useBrightnessGesture';
 import { useVolumeGesture } from './hooks/useVolumeGesture';
+import { useSeekGesture } from './hooks/useSeekGesture';
 import { Icons } from '@/components/ui/Icon';
 import { settingsStore, DEFAULT_SEEK_STEP_SECONDS } from '@/lib/store/settings-store';
 import { premiumModeSettingsStore } from '@/lib/store/premium-mode-settings';
@@ -476,33 +477,47 @@ export function DesktopVideoPlayer({
     isVolumeGestureActive,
   } = useVolumeGesture(data.isFullscreen, data.volume, actions.setVolume, actions.setIsMuted, refs.videoRef);
 
+  // Seek gesture for fullscreen (horizontal swipe)
+  const {
+    showSeekIndicator,
+    seekDelta,
+    handleSeekTouchStart,
+    handleSeekTouchMove,
+    handleSeekTouchEnd,
+    isSeekGestureActive,
+  } = useSeekGesture(data.isFullscreen, refs.videoRef);
+
   const brightnessPercent = Math.round((brightness / 1.5) * 100);
   const volumePercent = Math.round(data.volume * 100);
+  const seekDeltaSeconds = Math.round(seekDelta);
 
-  // Combined touch handler for container (handles tap, brightness and volume gestures)
+  // Combined touch handler for container (handles tap, brightness, volume and seek gestures)
   const handleContainerTouchStart = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.closest('button, a, input, [role="button"], [data-control]')) return;
     const rect = e.currentTarget.getBoundingClientRect();
     handleBrightnessTouchStart(e, rect.width);
     handleVolumeTouchStart(e, rect.width);
-  }, [handleBrightnessTouchStart, handleVolumeTouchStart]);
+    handleSeekTouchStart(e);
+  }, [handleBrightnessTouchStart, handleVolumeTouchStart, handleSeekTouchStart]);
 
   const handleContainerTouchMove = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     handleBrightnessTouchMove(e, rect.height);
     handleVolumeTouchMove(e, rect.height);
-  }, [handleBrightnessTouchMove, handleVolumeTouchMove]);
+    handleSeekTouchMove(e);
+  }, [handleBrightnessTouchMove, handleVolumeTouchMove, handleSeekTouchMove]);
 
   const handleContainerTouchEnd = React.useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.closest('button, a, input, [role="button"], [data-control]')) return;
     handleBrightnessTouchEnd();
     handleVolumeTouchEnd();
-    if (!isBrightnessGestureActive() && !isVolumeGestureActive()) {
+    handleSeekTouchEnd();
+    if (!isBrightnessGestureActive() && !isVolumeGestureActive() && !isSeekGestureActive()) {
       handleTap(e);
     }
-  }, [handleBrightnessTouchEnd, handleVolumeTouchEnd, isBrightnessGestureActive, isVolumeGestureActive, handleTap]);
+  }, [handleBrightnessTouchEnd, handleVolumeTouchEnd, handleSeekTouchEnd, isBrightnessGestureActive, isVolumeGestureActive, isSeekGestureActive, handleTap]);
 
   return (
     <div
@@ -603,6 +618,21 @@ export function DesktopVideoPlayer({
                   />
                 </div>
                 <span className="text-white text-xs font-medium tabular-nums">{volumePercent}%</span>
+              </div>
+            </div>
+          )}
+
+          {showSeekIndicator && data.isFullscreen && (
+            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
+              <div className="bg-black/60 backdrop-blur-md rounded-2xl px-6 py-3 flex items-center gap-3">
+                {seekDeltaSeconds >= 0 ? (
+                  <Icons.FastForward size={20} className="text-white/90" />
+                ) : (
+                  <Icons.Rewind size={20} className="text-white/90" />
+                )}
+                <span className="text-white text-lg font-bold tabular-nums">
+                  {seekDeltaSeconds >= 0 ? '+' : ''}{seekDeltaSeconds}s
+                </span>
               </div>
             </div>
           )}

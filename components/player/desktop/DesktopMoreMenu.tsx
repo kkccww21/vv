@@ -253,6 +253,21 @@ export function DesktopMoreMenu({
         return () => window.removeEventListener('scroll', handleScroll);
     }, [showMoreMenu, onToggleMoreMenu]);
 
+    // Close menu on click outside
+    React.useEffect(() => {
+        if (!showMoreMenu) return;
+        const handlePointerDown = (e: PointerEvent) => {
+            const target = e.target as HTMLElement;
+            if (
+                buttonRef.current?.contains(target) ||
+                menuRef.current?.contains(target)
+            ) return;
+            onToggleMoreMenu();
+        };
+        document.addEventListener('pointerdown', handlePointerDown);
+        return () => document.removeEventListener('pointerdown', handlePointerDown);
+    }, [showMoreMenu, onToggleMoreMenu]);
+
     React.useEffect(() => {
         if (showMoreMenu) {
             calculateMenuPosition();
