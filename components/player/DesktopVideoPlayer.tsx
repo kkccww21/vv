@@ -378,14 +378,34 @@ export function DesktopVideoPlayer({
     });
   }, []);
 
-  // Handle double click to toggle fullscreen on desktop
+  const mouseMoveShowTimeRef = React.useRef(0);
+
   const handleDoubleClick = React.useCallback((e: React.MouseEvent) => {
     if (!isMobile) {
       e.preventDefault();
       e.stopPropagation();
-      toggleFullscreen();
+      if (data.isFullscreen) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const verticalCenter = y > rect.height * 0.25 && y < rect.height * 0.75;
+        const horizontalSide = x < rect.width * 0.25 || x > rect.width * 0.75;
+        if (verticalCenter && horizontalSide) {
+          const side = x < rect.width / 2 ? 'left' : 'right';
+          if (side === 'right') {
+            logic.skipForward();
+          } else {
+            logic.skipBackward();
+          }
+          handleMouseMove();
+        } else {
+          toggleFullscreen();
+        }
+      } else {
+        toggleFullscreen();
+      }
     }
-  }, [isMobile, toggleFullscreen]);
+  }, [isMobile, toggleFullscreen, data.isFullscreen, logic, handleMouseMove]);
 
   const webFullscreenStyle = React.useMemo<React.CSSProperties | undefined>(() => {
     if (data.fullscreenMode !== 'window') return undefined;
@@ -413,11 +433,16 @@ export function DesktopVideoPlayer({
     onSingleTap: handleTouchToggleControls,
     onDoubleTapLeft: () => {
       logic.skipBackward();
-      handleMouseMove(); // Reset 3s auto-hide timer
+      handleMouseMove();
     },
     onDoubleTapRight: () => {
       logic.skipForward();
-      handleMouseMove(); // Reset 3s auto-hide timer
+      handleMouseMove();
+    },
+    onDoubleTapCenter: () => {
+      if (data.isFullscreen) {
+        toggleFullscreen();
+      }
     },
     onSkipContinueLeft: () => {
       logic.skipBackward();
@@ -428,6 +453,7 @@ export function DesktopVideoPlayer({
       handleMouseMove();
     },
     isSkipModeActive: data.showSkipForwardIndicator || data.showSkipBackwardIndicator,
+    isFullscreen: data.isFullscreen,
   });
 
   return (
@@ -436,7 +462,12 @@ export function DesktopVideoPlayer({
       className={`kvideo-container relative aspect-video bg-black group ${data.fullscreenMode === 'window' ? 'is-web-fullscreen' : ''
         } ${shouldForceLandscape ? 'force-landscape' : ''} ${isTopAlignedWebFullscreen ? 'top-align-stage' : ''} overflow-hidden rounded-none sm:rounded-[var(--radius-2xl)]`}
       style={webFullscreenStyle}
-      onMouseMove={() => { handleMouseMove(); }}
+      onMouseMove={() => {
+        if (!data.showControls) {
+          mouseMoveShowTimeRef.current = Date.now();
+        }
+        handleMouseMove();
+      }}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onDoubleClick={handleDoubleClick}
     >
@@ -463,6 +494,9 @@ export function DesktopVideoPlayer({
             onCanPlay={() => setIsLoading(false)}
             onClick={(e) => {
               e.preventDefault();
+              if (!isMobile && Date.now() - mouseMoveShowTimeRef.current > 200) {
+                handleTouchToggleControls();
+              }
             }}
             onTouchStart={isMobile ? handleTap : undefined}
             {...LEGACY_INLINE_VIDEO_PROPS} // Legacy iOS support

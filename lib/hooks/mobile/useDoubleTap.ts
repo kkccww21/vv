@@ -3,29 +3,43 @@ import { useRef } from 'react';
 interface DoubleTapHandler {
     onDoubleTapLeft: () => void;
     onDoubleTapRight: () => void;
+    onDoubleTapCenter: () => void;
     onSingleTap: () => void;
     onSkipContinueLeft: () => void;
     onSkipContinueRight: () => void;
     isSkipModeActive: boolean;
+    isFullscreen: boolean;
 }
 
-/**
- * Hook for handling double-tap gestures on mobile devices
- * Divides the video into left/right zones for skip forward/backward
- */
+type TapZone = 'left' | 'right' | 'center';
+
 export function useDoubleTap({
     onDoubleTapLeft,
     onDoubleTapRight,
+    onDoubleTapCenter,
     onSingleTap,
     onSkipContinueLeft,
     onSkipContinueRight,
     isSkipModeActive,
+    isFullscreen,
 }: DoubleTapHandler) {
-    const lastTapRef = useRef<{ time: number; side: 'left' | 'right' | null }>({
+    const lastTapRef = useRef<{ time: number; zone: TapZone | null }>({
         time: 0,
-        side: null,
+        zone: null,
     });
     const singleTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const getTapZone = (x: number, y: number, width: number, height: number): TapZone => {
+        if (isFullscreen) {
+            const verticalCenter = y > height * 0.25 && y < height * 0.75;
+            const horizontalSide = x < width * 0.25 || x > width * 0.75;
+            if (verticalCenter && horizontalSide) {
+                return x < width / 2 ? 'left' : 'right';
+            }
+            return 'center';
+        }
+        return x < width / 2 ? 'left' : 'right';
+    };
 
     const handleTap = (e: React.TouchEvent<HTMLVideoElement>) => {
         e.preventDefault();
@@ -36,48 +50,44 @@ export function useDoubleTap({
 
         if (!touch || !videoElement) return;
 
-        // Calculate touch position relative to video element
         const rect = videoElement.getBoundingClientRect();
         const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
         const width = rect.width;
-        const side = x < width / 2 ? 'left' : 'right';
+        const height = rect.height;
+        const zone = getTapZone(x, y, width, height);
 
         const timeDiff = currentTime - lastTapRef.current.time;
-        const sameSide = lastTapRef.current.side === side;
+        const sameZone = lastTapRef.current.zone === zone;
 
-        // Clear any pending single tap
         if (singleTapTimeoutRef.current) {
             clearTimeout(singleTapTimeoutRef.current);
             singleTapTimeoutRef.current = null;
         }
 
-        // If skip mode is active, single tap continues skipping
-        if (isSkipModeActive) {
-            if (side === 'left') {
+        if (isSkipModeActive && zone !== 'center') {
+            if (zone === 'left') {
                 onSkipContinueLeft();
             } else {
                 onSkipContinueRight();
             }
-            lastTapRef.current = { time: currentTime, side };
+            lastTapRef.current = { time: currentTime, zone };
             return;
         }
 
-        // Double tap detected (within 300ms on the same side)
-        if (timeDiff < 300 && sameSide) {
-            if (side === 'left') {
+        if (timeDiff < 300 && sameZone) {
+            if (zone === 'left') {
                 onDoubleTapLeft();
-            } else {
+            } else if (zone === 'right') {
                 onDoubleTapRight();
+            } else {
+                onDoubleTapCenter();
             }
-
-            // Reset to prevent triple-tap
-            lastTapRef.current = { time: 0, side: null };
+            lastTapRef.current = { time: 0, zone: null };
         } else {
-            // Possible single tap - wait to see if there's a double tap
-            lastTapRef.current = { time: currentTime, side };
+            lastTapRef.current = { time: currentTime, zone };
 
             singleTapTimeoutRef.current = setTimeout(() => {
-                // After 300ms, no double tap detected, execute single tap action
                 onSingleTap();
                 singleTapTimeoutRef.current = null;
             }, 300);
