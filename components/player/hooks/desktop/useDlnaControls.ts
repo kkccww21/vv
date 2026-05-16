@@ -69,8 +69,37 @@ export function useDlnaControls(src: string) {
     };
 
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [sendToExtension]);
+
+    // 主动探测扩展是否存在
+    const probeExtension = () => {
+      window.postMessage({
+        source: 'kvideo-page',
+        type: 'EXTENSION_PING'
+      }, '*');
+    };
+
+    // 立即发送一次
+    probeExtension();
+
+    // 每500ms重试，最多5秒
+    const probeInterval = setInterval(() => {
+      if (isExtensionAvailable) {
+        clearInterval(probeInterval);
+        return;
+      }
+      probeExtension();
+    }, 500);
+
+    const timeout = setTimeout(() => {
+      clearInterval(probeInterval);
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      clearInterval(probeInterval);
+      clearTimeout(timeout);
+    };
+  }, [sendToExtension, isExtensionAvailable]);
 
   // 获取设备列表
   const getDevices = useCallback(async () => {

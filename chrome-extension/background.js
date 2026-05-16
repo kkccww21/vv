@@ -157,13 +157,17 @@ async function castToDevice(device, mediaUrl) {
   
   for (const variant of SOAP_VARIANTS) {
     console.log(`[DLNA] === 尝试变体: ${variant.name} ===`);
+    console.log('[DLNA] 媒体URL:', mediaUrl);
     
     const setBody = variant.setUri(device.service, mediaUrl);
     const setAction = `"${device.service}#SetAVTransportURI"`;
     
+    console.log('[DLNA] SOAP Body:', setBody.substring(0, 300));
+    
     const result1 = await sendSoapRequest(device.controlUrl, setAction, setBody);
     if (!result1.success) {
       console.log(`[DLNA] ${variant.name} 设置URI失败，尝试下一个变体`);
+      console.log('[DLNA] 失败详情:', result1);
       continue;
     }
     
@@ -319,6 +323,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         foundDevices.forEach(d => addDevice(d));
         sendResponse({ success: true, devices: foundDevices });
       });
+      return true;
+
+    case 'TRIGGER_CAST':
+      (async () => {
+        try {
+          // 获取设备列表
+          const loadedDevices = await loadDevices();
+          if (loadedDevices.length === 0) {
+            sendResponse({ success: false, error: 'No devices available' });
+            return;
+          }
+
+          // 使用第一个设备
+          const device = loadedDevices[0];
+          const mediaUrl = message.mediaUrl;
+          
+          if (!mediaUrl) {
+            sendResponse({ success: false, error: 'No URL provided' });
+            return;
+          }
+
+          const result = await castToDevice(device, mediaUrl);
+          sendResponse(result);
+        } catch (error) {
+          sendResponse({ success: false, error: error.message });
+        }
+      })();
       return true;
   }
 });

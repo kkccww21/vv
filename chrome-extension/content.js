@@ -13,13 +13,38 @@ window.addEventListener('message', async (event) => {
   if (event.source !== window) return;
   if (event.data.source !== 'kvideo-page') return;
 
-  const { type, ...data } = event.data;
+  const { type, messageId, ...data } = event.data;
+
+  // TRIGGER_CAST 特殊处理：直接通知 background
+  if (type === 'TRIGGER_CAST') {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: 'TRIGGER_CAST',
+        messageId,
+        mediaUrl: data.mediaUrl || window.location.href
+      });
+
+      // 返回结果给网页
+      sendToPage({
+        type: 'TRIGGER_CAST_RESPONSE',
+        messageId,
+        ...response
+      });
+    } catch (error) {
+      sendToPage({
+        type: 'TRIGGER_CAST_RESPONSE',
+        messageId,
+        error: error.message
+      });
+    }
+    return;
+  }
 
   try {
-    const response = await chrome.runtime.sendMessage({ type, ...data });
-    sendToPage({ type: `${type}_RESPONSE`, ...response });
+    const response = await chrome.runtime.sendMessage({ type, messageId, ...data });
+    sendToPage({ type: `${type}_RESPONSE`, messageId, ...response });
   } catch (error) {
-    sendToPage({ type: `${type}_RESPONSE`, error: error.message });
+    sendToPage({ type: `${type}_RESPONSE`, messageId, error: error.message });
   }
 });
 
@@ -54,4 +79,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // 告诉页面扩展已加载
-sendToPage({ type: 'EXTENSION_READY' });
+setTimeout(() => {
+  sendToPage({ type: 'EXTENSION_READY' });
+}, 100);
+
+// 监听页面的探测请求
+  window.addEventListener('message', (event) => {
+    if (event.source !== window) return;
+    if (event.data.source !== 'kvideo-page') return;
+    if (event.data.type === 'EXTENSION_PING') {
+      sendToPage({ type: 'EXTENSION_READY' });
+    }
+  });
