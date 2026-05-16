@@ -53,6 +53,7 @@ export function DesktopControlsWrapper({ src, data, logic, refs }: DesktopContro
 
     return (
         <DesktopControls
+            src={src}
             showControls={showControls}
             isPlaying={isPlaying}
             currentTime={currentTime}

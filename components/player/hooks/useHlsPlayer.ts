@@ -30,6 +30,9 @@ export function useHlsPlayer({
         const video = videoRef.current;
         if (!video || !src) return;
 
+        // 将视频URL写入video元素的data属性，供Chrome扩展获取
+        video.setAttribute('data-kvideo-url', src);
+
         // Cleanup previous HLS instance
         if (hlsRef.current) {
             hlsRef.current.destroy();

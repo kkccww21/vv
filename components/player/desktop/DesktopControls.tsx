@@ -4,6 +4,7 @@ import { DesktopLeftControls } from './DesktopLeftControls';
 import { DesktopRightControls } from './DesktopRightControls';
 
 interface DesktopControlsProps {
+    src: string;
     showControls: boolean;
     isPlaying: boolean;
     currentTime: number;
@@ -41,6 +42,7 @@ interface DesktopControlsProps {
 
 export function DesktopControls(props: DesktopControlsProps) {
     const {
+        src,
         showControls,
         currentTime,
         duration,
@@ -76,7 +78,7 @@ export function DesktopControls(props: DesktopControlsProps) {
             <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-4 pt-2">
                 <div className="flex items-center justify-between gap-4">
                     <DesktopLeftControls {...props} formatTime={formatTime} />
-                    <DesktopRightControls {...props} />
+                    <DesktopRightControls {...props} src={src} />
                 </div>
             </div>
         </div>
