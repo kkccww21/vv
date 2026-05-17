@@ -78,6 +78,18 @@ export function DesktopOverlayWrapper({
 
     const battery = useBatteryStatus();
 
+    React.useEffect(() => {
+        if (isFullscreen) {
+            battery.refresh();
+        }
+    }, [isFullscreen, battery.refresh]);
+
+    React.useEffect(() => {
+        if (showControls && isFullscreen) {
+            battery.refresh();
+        }
+    }, [showControls, isFullscreen, battery.refresh]);
+
     return (
         <DesktopOverlay
             isLoading={isLoading}

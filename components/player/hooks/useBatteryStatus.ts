@@ -11,6 +11,7 @@ interface BatteryState {
   supported: boolean;
   charging: boolean;
   level: number;
+  refresh: () => void;
 }
 
 declare global {
@@ -19,12 +20,33 @@ declare global {
   }
 }
 
-export function useBatteryStatus() {
-  const [battery, setBattery] = React.useState<BatteryState>({
+export function useBatteryStatus(): BatteryState {
+  const [batteryState, setBatteryState] = React.useState<Omit<BatteryState, 'refresh'>>({
     supported: false,
     charging: false,
     level: 100,
   });
+
+  const refresh = React.useCallback(async () => {
+    if (!navigator.getBattery) {
+      return;
+    }
+
+    try {
+      const manager = await navigator.getBattery!();
+      setBatteryState({
+        supported: true,
+        charging: manager.charging,
+        level: Math.round(manager.level * 100),
+      });
+    } catch {
+      setBatteryState({
+        supported: false,
+        charging: false,
+        level: 100,
+      });
+    }
+  }, []);
 
   React.useEffect(() => {
     if (!navigator.getBattery) {
@@ -38,7 +60,7 @@ export function useBatteryStatus() {
         batteryManager = await navigator.getBattery!();
         
         const updateBattery = () => {
-          setBattery({
+          setBatteryState({
             supported: true,
             charging: batteryManager!.charging,
             level: Math.round(batteryManager!.level * 100),
@@ -51,7 +73,7 @@ export function useBatteryStatus() {
         batteryManager.addEventListener('levelchange', updateBattery);
 
       } catch {
-        setBattery({
+        setBatteryState({
           supported: false,
           charging: false,
           level: 100,
@@ -69,5 +91,8 @@ export function useBatteryStatus() {
     };
   }, []);
 
-  return battery;
+  return {
+    ...batteryState,
+    refresh,
+  };
 }
