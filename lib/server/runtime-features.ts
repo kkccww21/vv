@@ -20,13 +20,17 @@ function getRestrictedFeatures(
   deploymentProvider: RuntimeFeatures['deploymentProvider'],
   deploymentProviderLabel: string
 ): RuntimeFeatures {
+  const forceProxy = true;
+
   return {
     deploymentProvider,
     deploymentProviderLabel,
-    restrictedManagedDeployment: true,
-    mediaProxyEnabled: false,
+    restrictedManagedDeployment: !forceProxy,
+    mediaProxyEnabled: forceProxy,
     iptvEnabled: false,
-    restrictionSummary: `${deploymentProviderLabel} 托管部署会启用合规模式：关闭外部媒体代理、热链转发和 IPTV 流中继。需要这些能力时请改用 Docker 或传统 Node.js 自托管。`,
+    restrictionSummary: forceProxy
+      ? null
+      : `${deploymentProviderLabel} 托管部署会启用合规模式：关闭外部媒体代理、热链转发和 IPTV 流中继。需要这些能力时请改用 Docker 或传统 Node.js 自托管，或设置环境变量 ENABLE_MEDIA_PROXY=true 开启。`,
   };
 }
 

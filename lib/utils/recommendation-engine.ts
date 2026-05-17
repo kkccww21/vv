@@ -165,6 +165,7 @@ export function interleaveResults(
 ): InterleavedMovie[] {
   const interleaved: InterleavedMovie[] = [];
   const seenTitles = new Set<string>();
+  const seenIds = new Set<string>();
 
   // Find the max length across all result arrays
   const maxLen = Math.max(...resultsByQuery.map(r => r.movies.length), 0);
@@ -183,9 +184,11 @@ export function interleaveResults(
       const titleKey = movie.title.toLowerCase().trim();
 
       // Skip duplicates and already-watched
+      if (seenIds.has(movie.id)) continue;
       if (seenTitles.has(titleKey)) continue;
       if (watchedTitles.has(titleKey)) continue;
 
+      seenIds.add(movie.id);
       seenTitles.add(titleKey);
       interleaved.push({
         ...movie,

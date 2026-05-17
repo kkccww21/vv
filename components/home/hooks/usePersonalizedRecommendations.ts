@@ -52,7 +52,8 @@ export function usePersonalizedRecommendations(isPremium = false) {
   const [page, setPage] = useState(0);
   const queriesRef = useRef<RecommendationQuery[]>([]);
   const roundRef = useRef(0); // Track how many times we've regenerated queries
-  const allSeenTitlesRef = useRef<Set<string>>(new Set()); // Global dedup across rounds
+  const allSeenTitlesRef = useRef<Set<string>>(new Set());
+  const allSeenIdsRef = useRef<Set<string>>(new Set());
   const cacheRef = useRef<{
     key: string;
     movies: InterleavedMovie[];
@@ -121,9 +122,9 @@ export function usePersonalizedRecommendations(isPremium = false) {
       Date.now() - cacheRef.current.timestamp < CACHE_DURATION
     ) {
       setMovies(cacheRef.current.movies);
-      // Rebuild seen titles from cache
       for (const m of cacheRef.current.movies) {
         allSeenTitlesRef.current.add(m.title.toLowerCase().trim());
+        allSeenIdsRef.current.add(m.id);
       }
       setHasMore(true);
       return;
@@ -141,6 +142,7 @@ export function usePersonalizedRecommendations(isPremium = false) {
       setMovies(interleaved);
       for (const m of interleaved) {
         allSeenTitlesRef.current.add(m.title.toLowerCase().trim());
+        allSeenIdsRef.current.add(m.id);
       }
       // Always assume there's more — we can regenerate queries if this round exhausts
       setHasMore(interleaved.length > 0);
@@ -170,7 +172,7 @@ export function usePersonalizedRecommendations(isPremium = false) {
 
       // Deduplicate against all previously seen movies (across all rounds)
       const uniqueNew = newMovies.filter(
-        m => !allSeenTitlesRef.current.has(m.title.toLowerCase().trim())
+        m => !allSeenIdsRef.current.has(m.id) && !allSeenTitlesRef.current.has(m.title.toLowerCase().trim())
       );
 
       if (uniqueNew.length === 0) {
@@ -183,12 +185,13 @@ export function usePersonalizedRecommendations(isPremium = false) {
           // Fetch page 0 with fresh random offsets
           const freshMovies = await fetchPage(freshQueries, 0, watchedTitles);
           const freshUnique = freshMovies.filter(
-            m => !allSeenTitlesRef.current.has(m.title.toLowerCase().trim())
+            m => !allSeenIdsRef.current.has(m.id) && !allSeenTitlesRef.current.has(m.title.toLowerCase().trim())
           );
 
           if (freshUnique.length > 0) {
             for (const m of freshUnique) {
               allSeenTitlesRef.current.add(m.title.toLowerCase().trim());
+              allSeenIdsRef.current.add(m.id);
             }
             setMovies((prev) => [...prev, ...freshUnique]);
             setPage(0); // Reset page for fresh queries
@@ -206,6 +209,7 @@ export function usePersonalizedRecommendations(isPremium = false) {
       } else {
         for (const m of uniqueNew) {
           allSeenTitlesRef.current.add(m.title.toLowerCase().trim());
+          allSeenIdsRef.current.add(m.id);
         }
         setMovies((prev) => [...prev, ...uniqueNew]);
         setPage(nextPage);

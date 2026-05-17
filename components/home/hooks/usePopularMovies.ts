@@ -32,7 +32,12 @@ export function usePopularMovies(selectedTag: string, tags: any[], contentType: 
             const data = await response.json();
             const newMovies = data.subjects || [];
 
-            setMovies(prev => append ? [...prev, ...newMovies] : newMovies);
+            setMovies(prev => {
+                if (!append) return newMovies;
+                const existingIds = new Set(prev.map(m => m.id));
+                const unique = newMovies.filter((m: any) => !existingIds.has(m.id));
+                return [...prev, ...unique];
+            });
             setHasMore(newMovies.length === PAGE_LIMIT);
         } catch (error) {
             console.error('Failed to load movies:', error);
