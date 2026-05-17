@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchWithRetry } from '@/lib/utils/fetch-with-retry';
 import { getRuntimeFeatures } from '@/lib/server/runtime-features';
+import { decryptPath } from '@/lib/utils/rd1-crypto';
 
 export const runtime = 'edge';
 
@@ -20,21 +21,40 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const resolvedParams = await params;
     const pathSegments = resolvedParams.path || [];
 
-    if (pathSegments.length < 2) {
-        return new NextResponse('Invalid URL format. Expected: /api/rd1/{host}/{port?}/{path...}', { status: 400 });
+    if (pathSegments.length < 1) {
+        return new NextResponse('Invalid URL format. Expected: /api/rd1/{encrypted_host_port}/{path...}', { status: 400 });
     }
 
-    const host = pathSegments[0];
-    let port: string | undefined;
-    let resourcePath: string;
+    // First segment is the encrypted host:port
+    const encryptedHostPort = pathSegments[0];
 
-    const isPort = /^\d{1,5}$/.test(pathSegments[1]);
+    // Validate encrypted string length (must be even for hex, or valid base64url)
+    if (!encryptedHostPort || encryptedHostPort.length < 4) {
+        return new NextResponse('Invalid encrypted host:port', { status: 400 });
+    }
 
-    if (isPort) {
-        port = pathSegments[1];
-        resourcePath = pathSegments.slice(2).join('/');
-    } else {
-        resourcePath = pathSegments.slice(1).join('/');
+    let rawHostPort: string;
+    try {
+        rawHostPort = decryptPath(encryptedHostPort);
+    } catch (e) {
+        console.error('Decryption error:', e);
+        return new NextResponse('Invalid encrypted host:port', { status: 400 });
+    }
+
+    // Parse host:port
+    const colonIndex = rawHostPort.indexOf(':');
+    if (colonIndex === -1) {
+        return new NextResponse(`Invalid host:port format after decryption: "${rawHostPort}"`, { status: 400 });
+    }
+
+    const host = rawHostPort.substring(0, colonIndex);
+    const port = rawHostPort.substring(colonIndex + 1);
+
+    // Rest is resource path
+    const resourcePath = pathSegments.slice(1).join('/');
+
+    if (!host || !resourcePath) {
+        return new NextResponse('Invalid URL format', { status: 400 });
     }
 
     const protocol = port === '80' ? 'http' : 'https';
