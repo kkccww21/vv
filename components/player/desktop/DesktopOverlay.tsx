@@ -5,6 +5,12 @@ import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 import { DesktopMoreMenu } from './DesktopMoreMenu';
 import { DesktopSpeedMenu } from './DesktopSpeedMenu';
 
+interface BatteryState {
+    supported: boolean;
+    charging: boolean;
+    level: number;
+}
+
 interface DesktopOverlayProps {
     isLoading: boolean;
     isTransitioningToNextEpisode?: boolean;
@@ -20,6 +26,7 @@ interface DesktopOverlayProps {
     showControls: boolean;
     isFullscreen: boolean;
     fullscreenClock: string;
+    battery: BatteryState;
     onTogglePlay: () => void;
     onSkipForward: () => void;
     onSkipBackward: () => void;
@@ -59,6 +66,7 @@ export function DesktopOverlay({
     toastMessage,
     isFullscreen,
     fullscreenClock,
+    battery,
     onTogglePlay,
     onSkipForward,
     onSkipBackward,
@@ -106,7 +114,7 @@ export function DesktopOverlay({
                 />
             </div>
 
-            {/* Clock and Speed Menu (Top Right) */}
+            {/* Clock and Battery and Speed Menu (Top Right) */}
             <div className={`absolute top-2 right-4 z-40 flex items-center gap-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
                 {/* System Clock */}
                 {isFullscreen && fullscreenClock && (
@@ -115,6 +123,25 @@ export function DesktopOverlay({
                             <Icons.Clock size={14} className="opacity-80" />
                             <span className="text-sm font-semibold tracking-[0.18em] tabular-nums">
                                 {fullscreenClock}
+                            </span>
+                        </div>
+                    </div>
+                )}
+                {/* Battery Status */}
+                {isFullscreen && battery.supported && (
+                    <div className="px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/15">
+                        <div className="flex items-center gap-2 text-white">
+                            {battery.charging ? (
+                                <Icons.BatteryCharging size={16} className="text-[#34c759]" />
+                            ) : battery.level <= 20 ? (
+                                <Icons.BatteryLow size={16} className="text-[#ff3b30]" />
+                            ) : battery.level <= 60 ? (
+                                <Icons.BatteryMedium size={16} className="opacity-80" />
+                            ) : (
+                                <Icons.BatteryFull size={16} className="opacity-80" />
+                            )}
+                            <span className="text-sm font-semibold tabular-nums">
+                                {battery.level}%
                             </span>
                         </div>
                     </div>

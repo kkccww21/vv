@@ -227,4 +227,49 @@ export const UtilityIcons = {
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
     ),
+
+    Battery: ({ className = "", size = 24 }: IconProps) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
+            <line x1="23" y1="13" x2="23" y2="11" />
+        </svg>
+    ),
+
+    BatteryCharging: ({ className = "", size = 24 }: IconProps) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
+            <line x1="23" y1="13" x2="23" y2="11" />
+            <polygon points="13 11 9 17 15 17 11 23" />
+        </svg>
+    ),
+
+    BatteryLow: ({ className = "", size = 24 }: IconProps) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
+            <line x1="23" y1="13" x2="23" y2="11" />
+            <line x1="5" y1="10" x2="5" y2="14" />
+            <line x1="9" y1="10" x2="9" y2="14" />
+        </svg>
+    ),
+
+    BatteryMedium: ({ className = "", size = 24 }: IconProps) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
+            <line x1="23" y1="13" x2="23" y2="11" />
+            <line x1="5" y1="10" x2="5" y2="14" />
+            <line x1="9" y1="10" x2="9" y2="14" />
+            <line x1="13" y1="10" x2="13" y2="14" />
+        </svg>
+    ),
+
+    BatteryFull: ({ className = "", size = 24 }: IconProps) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
+            <line x1="23" y1="13" x2="23" y2="11" />
+            <line x1="5" y1="10" x2="5" y2="14" />
+            <line x1="9" y1="10" x2="9" y2="14" />
+            <line x1="13" y1="10" x2="13" y2="14" />
+            <line x1="17" y1="10" x2="17" y2="14" />
+        </svg>
+    ),
 };

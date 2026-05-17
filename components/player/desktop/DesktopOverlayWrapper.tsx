@@ -1,6 +1,7 @@
 import React from 'react';
 import { DesktopOverlay } from './DesktopOverlay';
 import { useDesktopPlayerState } from '../hooks/useDesktopPlayerState';
+import { useBatteryStatus } from '../hooks/useBatteryStatus';
 
 interface DesktopOverlayWrapperProps {
     data: ReturnType<typeof useDesktopPlayerState>['data'];
@@ -75,6 +76,8 @@ export function DesktopOverlayWrapper({
         toastMessage,
     } = data;
 
+    const battery = useBatteryStatus();
+
     return (
         <DesktopOverlay
             isLoading={isLoading}
@@ -91,6 +94,7 @@ export function DesktopOverlayWrapper({
             showControls={showControls}
             isFullscreen={isFullscreen}
             fullscreenClock={fullscreenClock}
+            battery={battery}
             onTogglePlay={onTogglePlay}
             onSkipForward={onSkipForward}
             onSkipBackward={onSkipBackward}
