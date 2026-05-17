@@ -211,7 +211,7 @@ export async function GET(request: NextRequest) {
 
     const responseHeaders: Record<string, string> = {
       'Content-Type': forwardContentType,
-      'Cache-Control': 'public, max-age=60',
+      'Cache-Control': 'public, max-age=3600',
       ...CORS_HEADERS,
     };
 

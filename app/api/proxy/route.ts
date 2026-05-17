@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
         headers.set('Access-Control-Allow-Origin', '*');
         headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
         headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        headers.set('Cache-Control', 'public, max-age=86400');
 
         return new NextResponse(response.body, {
             status: response.status,
