@@ -650,7 +650,7 @@ export function DesktopVideoPlayer({
             // More Menu Props
             showMoreMenu={data.showMoreMenu}
             isPremium={isPremium}
-            isProxied={src.includes('/api/proxy')}
+            isProxied={src.includes('/api/rd')}
             onToggleMoreMenu={() => actions.setShowMoreMenu(!data.showMoreMenu)}
             onMoreMenuMouseEnter={() => {
               if (moreMenuTimeoutRef.current) {

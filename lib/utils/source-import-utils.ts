@@ -117,7 +117,7 @@ export async function fetchSourcesFromUrl(url: string): Promise<ImportResult> {
             throw directError;
         }
 
-        response = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`, {
+        response = await fetch(`/api/rd?url=${encodeURIComponent(url)}`, {
             headers,
         });
     }

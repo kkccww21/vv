@@ -246,7 +246,7 @@ export function useHlsPlayer({
                             throw e;
                         }
                         console.warn(`[HLS Native] Fetch failed for ${url}, trying proxy...`, e);
-                        const proxiedUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+                        const proxiedUrl = `/api/rd?url=${encodeURIComponent(url)}`;
                         const res = await fetch(proxiedUrl);
                         if (!res.ok) throw new Error(`Proxy fetch failed: HTTP ${res.status}`);
                         return await res.text();
@@ -422,7 +422,7 @@ export function useHlsPlayer({
                     return;
                 }
                 // Try proxied URL as final attempt
-                const proxiedUrl = `/api/proxy?url=${encodeURIComponent(src)}`;
+                const proxiedUrl = `/api/rd?url=${encodeURIComponent(src)}`;
                 video.src = proxiedUrl;
                 video.addEventListener('error', () => {
                     onError?.('当前浏览器不支持 HLS 视频播放。建议使用 Chrome、Edge 或 Safari 浏览器。');

@@ -172,7 +172,7 @@ export function VideoPlayer({
   };
 
   const finalPlayUrl = effectiveUseProxy
-    ? `/api/proxy?url=${encodeURIComponent(playUrl)}&retry=${retryCount}` // Add retry param to force fresh request
+    ? `/api/rd?url=${encodeURIComponent(playUrl)}&retry=${retryCount}` // Add retry param to force fresh request
     : playUrl;
 
   if (!playUrl) {

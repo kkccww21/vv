@@ -107,7 +107,7 @@ export function parseBlocks(lines: string[]): Block[] {
  * Unwrap proxied URL to get original URL
  */
 function unwrapProxyUrl(url: string): string {
-    if (url.includes('/api/proxy?url=')) {
+    if (url.includes('/api/rd?url=')) {
         try {
             const match = url.match(/[?&]url=([^&]+)/);
             if (match && match[1]) {

@@ -6,12 +6,12 @@ function proxyUriInTag(line: string, base: URL, origin: string): string {
     if (uriMatch && uriMatch[1]) {
         const uri = uriMatch[1];
         // Skip if already proxied
-        if (uri.includes('/api/proxy')) {
+        if (uri.includes('/api/rd')) {
             return line;
         }
         try {
             const absoluteUrl = new URL(uri, base).toString();
-            const proxiedUrl = `${origin}/api/proxy?url=${encodeURIComponent(absoluteUrl)}`;
+            const proxiedUrl = `${origin}/api/rd?url=${encodeURIComponent(absoluteUrl)}`;
             return line.replace(/URI="[^"]+"/, `URI="${proxiedUrl}"`);
         } catch {
             return line;
@@ -59,13 +59,13 @@ export async function processM3u8Content(
 
         // Resolve relative URLs for segments and variant playlists
         // Skip if already proxied
-        if (trimmed.includes('/api/proxy')) {
+        if (trimmed.includes('/api/rd')) {
             return line;
         }
 
         try {
             const absoluteUrl = new URL(trimmed, base).toString();
-            return `${origin}/api/proxy?url=${encodeURIComponent(absoluteUrl)}`;
+            return `${origin}/api/rd?url=${encodeURIComponent(absoluteUrl)}`;
         } catch {
             return line;
         }

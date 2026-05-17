@@ -3,7 +3,7 @@ export function getCopyUrl(src: string, type: 'original' | 'proxy' = 'original')
 
     // If user wants original link, strip proxy prefix if present
     if (type === 'original') {
-        if (urlToCopy.includes('/api/proxy?url=')) {
+        if (urlToCopy.includes('/api/rd?url=')) {
             const match = urlToCopy.match(/url=([^&]*)/);
             if (match && match[1]) {
                 urlToCopy = decodeURIComponent(match[1]);
@@ -12,8 +12,8 @@ export function getCopyUrl(src: string, type: 'original' | 'proxy' = 'original')
     }
     // If user wants proxy link, ensure it has proxy prefix
     else if (type === 'proxy') {
-        if (!urlToCopy.includes('/api/proxy?url=')) {
-            urlToCopy = `${window.location.origin}/api/proxy?url=${encodeURIComponent(urlToCopy)}`;
+        if (!urlToCopy.includes('/api/rd?url=')) {
+            urlToCopy = `${window.location.origin}/api/rd?url=${encodeURIComponent(urlToCopy)}`;
         } else if (urlToCopy.startsWith('/')) {
             // Ensure absolute URL for copy
             urlToCopy = `${window.location.origin}${urlToCopy}`;
@@ -25,9 +25,9 @@ export function getCopyUrl(src: string, type: 'original' | 'proxy' = 'original')
 
 export function getProxyUrl(src: string): string {
     if (!src) return '';
-    if (src.includes('/api/proxy')) return src;
+    if (src.includes('/api/rd')) return src;
 
     // Handle server-side vs client-side origin
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    return `${origin}/api/proxy?url=${encodeURIComponent(src)}`;
+    return `${origin}/api/rd?url=${encodeURIComponent(src)}`;
 }

@@ -20,7 +20,7 @@ function getRestrictedFeatures(
   deploymentProvider: RuntimeFeatures['deploymentProvider'],
   deploymentProviderLabel: string
 ): RuntimeFeatures {
-  const forceProxy = false;
+  const forceProxy = true;
 
   return {
     deploymentProvider,

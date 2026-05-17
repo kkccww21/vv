@@ -743,7 +743,7 @@ Issue [#127](https://github.com/KuekHaoYang/KVideo/issues/127) 之后，仓库�
 
 - 不再推荐任何 `Deploy with Vercel`、`Connect GitHub`、`Fork 后直接授权第三方读取仓库` 这一类 GitHub 直连导入流程。
 - Vercel / Cloudflare 托管部署现在默认运行在**合规模式**：自动关闭外部媒体代理、热链转发和 IPTV 流中继，仅保留直连播放路径。
-- 需要 `/api/proxy`、`/api/iptv/stream`、自定义 `User-Agent` / `Referer` 转发、IPTV 中继等能力时，请使用 Docker 或传统 Node.js 自托管。
+- 需要 `/api/rd`、`/api/iptv/stream`、自定义 `User-Agent` / `Referer` 转发、IPTV 中继等能力时，请使用 Docker 或传统 Node.js 自托管。
 - 无论部署到哪里，都只应接入你有权使用、且允许当前部署环境访问的内容来源。
 - 相关政策请直接阅读官方原文：
   - [GitHub Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)

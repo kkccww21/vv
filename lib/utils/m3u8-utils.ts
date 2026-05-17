@@ -85,7 +85,7 @@ export function filterM3u8Ad(content: string, baseUrl: string, mode: AdFilterMod
 
     // Unwrap baseUrl if it's a proxy URL to get correct basePath and origin
     let effectiveBaseUrl = baseUrl;
-    if (baseUrl.includes('/api/proxy?url=')) {
+    if (baseUrl.includes('/api/rd?url=')) {
         try {
             const urlMatch = baseUrl.match(/[?&]url=([^&]+)/);
             if (urlMatch && urlMatch[1]) {

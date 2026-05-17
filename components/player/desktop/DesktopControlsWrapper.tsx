@@ -49,7 +49,7 @@ export function DesktopControlsWrapper({ src, data, logic, refs }: DesktopContro
         volumeBarRef,
     } = refs;
 
-    const isProxied = src.includes('/api/proxy');
+    const isProxied = src.includes('/api/rd');
 
     return (
         <DesktopControls
