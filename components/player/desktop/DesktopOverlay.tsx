@@ -100,8 +100,8 @@ export function DesktopOverlay({
 
     return (
         <>
-            {/* More Menu (Top Left) - Moved slightly down and lower z-index to stay below navbar */}
-            <div className={`absolute top-2 left-4 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
+            {/* More Menu + Episode Name (Top Left) */}
+            <div className={`absolute top-2 left-4 z-40 flex items-center gap-2 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
                 <DesktopMoreMenu
                     showMoreMenu={showMoreMenu}
                     isPremium={isPremium}
@@ -115,16 +115,10 @@ export function DesktopOverlay({
                     containerRef={containerRef}
                     isRotated={isRotated}
                 />
+                {episodeName && totalEpisodes > 1 && (
+                    <span className="text-white/70 text-xs font-medium">{episodeName}</span>
+                )}
             </div>
-
-            {/* Episode Name (Top Center) */}
-            {episodeName && totalEpisodes > 1 && (
-                <div className={`absolute top-2 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: 'none' }}>
-                    <div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15">
-                        <span className="text-white/80 text-xs font-medium">{episodeName}</span>
-                    </div>
-                </div>
-            )}
 
             {/* Clock and Battery and Speed Menu (Top Right) */}
             <div className={`absolute top-2 right-4 z-40 flex items-center gap-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>

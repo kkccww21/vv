@@ -52,22 +52,21 @@ interface ResolutionBadgeProps {
 }
 
 function ResolutionBadge({ videoResolution, showControls }: ResolutionBadgeProps) {
-  const [show, setShow] = React.useState(true);
+  const [show, setShow] = React.useState(false);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     if (showControls) {
-      // Show immediately when controls are visible
-      setShow(true);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
+      setShow(false);
     } else {
-      // Delay hide by 1 second when controls are hidden
+      setShow(true);
       timeoutRef.current = setTimeout(() => {
         setShow(false);
-      }, 1000);
+      }, 2000);
     }
 
     return () => {
