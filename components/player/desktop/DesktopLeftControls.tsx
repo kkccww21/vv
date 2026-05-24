@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icons } from '@/components/ui/Icon';
 import { DesktopVolumeControl } from './DesktopVolumeControl';
+import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 
 interface DesktopLeftControlsProps {
     isPlaying: boolean;
@@ -31,8 +32,10 @@ export function DesktopLeftControls({
     onVolumeMouseDown,
     formatTime
 }: DesktopLeftControlsProps) {
+    const isMobile = useIsMobile();
+
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
             {/* Play/Pause */}
             <button
                 onClick={onTogglePlay}
@@ -54,8 +57,9 @@ export function DesktopLeftControls({
             />
 
             {/* Time */}
-            <span className="text-white text-sm font-medium tabular-nums">
-                {formatTime(currentTime)} / {formatTime(duration)}
+            <span className={`text-white font-medium tabular-nums ${isMobile ? 'flex flex-col leading-tight items-start text-xs' : 'text-sm whitespace-nowrap'}`}>
+                {formatTime(currentTime)}
+                <span className="whitespace-nowrap">{isMobile ? ` ${formatTime(duration)}` : ` / ${formatTime(duration)}`}</span>
             </span>
         </div>
     );
