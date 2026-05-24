@@ -681,6 +681,7 @@ export function DesktopVideoPlayer({
             onCycleWebFullscreenSize={cycleWebFullscreenSize}
             // Portal container
             containerRef={containerRef}
+            episodeName={episodeName}
           />
 
             <DesktopControlsWrapper
@@ -688,6 +689,8 @@ export function DesktopVideoPlayer({
               data={data}
               logic={logic}
               refs={refs}
+              hasNextEpisode={totalEpisodes > 1 && (isReversed ? currentEpisodeIndex > 0 : currentEpisodeIndex < totalEpisodes - 1)}
+              onNextEpisode={onNextEpisode}
             />
           </div>
         </div>

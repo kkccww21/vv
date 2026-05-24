@@ -14,6 +14,8 @@ interface DesktopRightControlsProps {
     onTogglePictureInPicture: () => void;
     onShowAirPlayMenu: () => void;
     onShowCastMenu: () => void;
+    hasNextEpisode?: boolean;
+    onNextEpisode?: () => void;
 }
 
 export function DesktopRightControls({
@@ -27,7 +29,9 @@ export function DesktopRightControls({
     onToggleWebFullscreen,
     onTogglePictureInPicture,
     onShowAirPlayMenu,
-    onShowCastMenu
+    onShowCastMenu,
+    hasNextEpisode = false,
+    onNextEpisode,
 }: DesktopRightControlsProps) {
     const {
         isExtensionAvailable
@@ -91,6 +95,18 @@ export function DesktopRightControls({
 
     return (
         <div className="relative z-50 flex items-center gap-3">
+            {/* Next Episode */}
+            {hasNextEpisode && onNextEpisode && (
+                <button
+                    onClick={onNextEpisode}
+                    className="btn-icon"
+                    aria-label="下一集"
+                    title="下一集"
+                >
+                    <Icons.SkipForward size={20} />
+                </button>
+            )}
+
             {/* Trigger Cast (Chrome Extension) */}
             {isExtensionAvailable && (
                 <div className="relative">

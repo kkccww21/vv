@@ -32,6 +32,7 @@ interface DesktopOverlayWrapperProps {
     webFullscreenSize: 'full' | 'large' | 'focused';
     onCycleWebFullscreenSize: () => void;
     containerRef: React.RefObject<HTMLDivElement | null>;
+    episodeName?: string;
 }
 
 export function DesktopOverlayWrapper({
@@ -62,6 +63,7 @@ export function DesktopOverlayWrapper({
     webFullscreenSize,
     onCycleWebFullscreenSize,
     containerRef,
+    episodeName,
 }: DesktopOverlayWrapperProps) {
     const {
         isLoading,
@@ -129,6 +131,7 @@ export function DesktopOverlayWrapper({
             onCycleWebFullscreenSize={onCycleWebFullscreenSize}
             containerRef={containerRef}
             isRotated={isRotated}
+            episodeName={episodeName}
         />
     );
 }

@@ -50,6 +50,7 @@ interface DesktopOverlayProps {
     onCycleWebFullscreenSize: () => void;
     containerRef: React.RefObject<HTMLDivElement | null>;
     isRotated?: boolean;
+    episodeName?: string;
 }
 
 export function DesktopOverlay({
@@ -90,8 +91,8 @@ export function DesktopOverlay({
     onCycleWebFullscreenSize,
     containerRef,
     isRotated = false,
+    episodeName,
 }: DesktopOverlayProps) {
-    // Show navigation buttons when controls are visible or when paused (controls usually show when paused anyway)
     const showNavButtons = showControls || !isPlaying;
     const isMobile = useIsMobile();
 
@@ -113,6 +114,15 @@ export function DesktopOverlay({
                     isRotated={isRotated}
                 />
             </div>
+
+            {/* Episode Name (Top Center) */}
+            {episodeName && (
+                <div className={`absolute top-2 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: 'none' }}>
+                    <div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15">
+                        <span className="text-white/80 text-xs font-medium">{episodeName}</span>
+                    </div>
+                </div>
+            )}
 
             {/* Clock and Battery and Speed Menu (Top Right) */}
             <div className={`absolute top-2 right-4 z-40 flex items-center gap-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>

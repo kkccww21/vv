@@ -8,9 +8,11 @@ interface DesktopControlsWrapperProps {
     data: ReturnType<typeof useDesktopPlayerState>['data'];
     logic: ReturnType<typeof useDesktopPlayerLogic>;
     refs: ReturnType<typeof useDesktopPlayerState>['refs'];
+    hasNextEpisode?: boolean;
+    onNextEpisode?: () => void;
 }
 
-export function DesktopControlsWrapper({ src, data, logic, refs }: DesktopControlsWrapperProps) {
+export function DesktopControlsWrapper({ src, data, logic, refs, hasNextEpisode, onNextEpisode }: DesktopControlsWrapperProps) {
     const {
         isPlaying,
         currentTime,
@@ -85,6 +87,8 @@ export function DesktopControlsWrapper({ src, data, logic, refs }: DesktopContro
             onProgressMouseDown={handleProgressMouseDown}
             onProgressTouchStart={handleProgressTouchStart}
             formatTime={formatTime}
+            hasNextEpisode={hasNextEpisode}
+            onNextEpisode={onNextEpisode}
         />
     );
 }

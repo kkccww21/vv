@@ -38,6 +38,8 @@ interface DesktopControlsProps {
     onProgressMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
     onProgressTouchStart: (e: React.TouchEvent<HTMLDivElement>) => void;
     formatTime: (seconds: number) => string;
+    hasNextEpisode?: boolean;
+    onNextEpisode?: () => void;
 }
 
 export function DesktopControls(props: DesktopControlsProps) {
@@ -78,7 +80,7 @@ export function DesktopControls(props: DesktopControlsProps) {
             <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-4 pt-2">
                 <div className="flex items-center justify-between gap-4">
                     <DesktopLeftControls {...props} formatTime={formatTime} />
-                    <DesktopRightControls {...props} src={src} />
+                    <DesktopRightControls {...props} src={src} hasNextEpisode={props.hasNextEpisode} onNextEpisode={props.onNextEpisode} />
                 </div>
             </div>
         </div>
