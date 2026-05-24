@@ -33,6 +33,7 @@ interface DesktopOverlayWrapperProps {
     onCycleWebFullscreenSize: () => void;
     containerRef: React.RefObject<HTMLDivElement | null>;
     episodeName?: string;
+    totalEpisodes?: number;
 }
 
 export function DesktopOverlayWrapper({
@@ -64,6 +65,7 @@ export function DesktopOverlayWrapper({
     onCycleWebFullscreenSize,
     containerRef,
     episodeName,
+    totalEpisodes,
 }: DesktopOverlayWrapperProps) {
     const {
         isLoading,
@@ -132,6 +134,7 @@ export function DesktopOverlayWrapper({
             containerRef={containerRef}
             isRotated={isRotated}
             episodeName={episodeName}
+            totalEpisodes={totalEpisodes}
         />
     );
 }

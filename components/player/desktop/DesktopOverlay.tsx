@@ -51,6 +51,7 @@ interface DesktopOverlayProps {
     containerRef: React.RefObject<HTMLDivElement | null>;
     isRotated?: boolean;
     episodeName?: string;
+    totalEpisodes?: number;
 }
 
 export function DesktopOverlay({
@@ -92,6 +93,7 @@ export function DesktopOverlay({
     containerRef,
     isRotated = false,
     episodeName,
+    totalEpisodes = 1,
 }: DesktopOverlayProps) {
     const showNavButtons = showControls || !isPlaying;
     const isMobile = useIsMobile();
@@ -116,7 +118,7 @@ export function DesktopOverlay({
             </div>
 
             {/* Episode Name (Top Center) */}
-            {episodeName && (
+            {episodeName && totalEpisodes > 1 && (
                 <div className={`absolute top-2 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: 'none' }}>
                     <div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15">
                         <span className="text-white/80 text-xs font-medium">{episodeName}</span>
@@ -128,32 +130,28 @@ export function DesktopOverlay({
             <div className={`absolute top-2 right-4 z-40 flex items-center gap-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: showControls ? 'auto' : 'none' }}>
                 {/* System Clock */}
                 {isFullscreen && fullscreenClock && (
-                    <div className="min-w-[80px] px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-center">
-                        <div className="flex items-center justify-center gap-2 text-white">
-                            <Icons.Clock size={14} className="opacity-80" />
-                            <span className="text-sm font-semibold tracking-[0.18em] tabular-nums">
-                                {fullscreenClock}
-                            </span>
-                        </div>
+                    <div className="flex items-center gap-1 text-white/70">
+                        <Icons.Clock size={14} className="opacity-80" />
+                        <span className="text-sm font-semibold tracking-[0.18em] tabular-nums">
+                            {fullscreenClock}
+                        </span>
                     </div>
                 )}
                 {/* Battery Status */}
                 {isFullscreen && battery.supported && (
-                    <div className="px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/15">
-                        <div className="flex items-center gap-2 text-white">
-                            {battery.charging ? (
-                                <Icons.BatteryCharging size={16} className="text-[#34c759]" />
-                            ) : battery.level <= 20 ? (
-                                <Icons.BatteryLow size={16} className="text-[#ff3b30]" />
-                            ) : battery.level <= 60 ? (
-                                <Icons.BatteryMedium size={16} className="opacity-80" />
-                            ) : (
-                                <Icons.BatteryFull size={16} className="opacity-80" />
-                            )}
-                            <span className="text-sm font-semibold tabular-nums">
-                                {battery.level}%
-                            </span>
-                        </div>
+                    <div className="flex items-center gap-1 text-white/70">
+                        {battery.charging ? (
+                            <Icons.BatteryCharging size={16} className="text-[#34c759]" />
+                        ) : battery.level <= 20 ? (
+                            <Icons.BatteryLow size={16} className="text-[#ff3b30]" />
+                        ) : battery.level <= 60 ? (
+                            <Icons.BatteryMedium size={16} className="opacity-80" />
+                        ) : (
+                            <Icons.BatteryFull size={16} className="opacity-80" />
+                        )}
+                        <span className="text-sm font-semibold tabular-nums">
+                            {battery.level}%
+                        </span>
                     </div>
                 )}
                 {/* Speed Menu */}

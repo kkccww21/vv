@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Icons } from '@/components/ui/Icon';
 import { useDlnaControls } from '../hooks/desktop/useDlnaControls';
+import { useIsMobile } from '@/lib/hooks/mobile/useDeviceDetection';
 
 interface DesktopRightControlsProps {
     isNativeFullscreen: boolean;
@@ -36,6 +37,7 @@ export function DesktopRightControls({
     const {
         isExtensionAvailable
     } = useDlnaControls(src);
+    const isMobile = useIsMobile();
 
     const [isTriggerCasting, setIsTriggerCasting] = useState(false);
     const [castStatus, setCastStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -143,7 +145,7 @@ export function DesktopRightControls({
 
             {/* Picture-in-Picture */}
             {
-                isPiPSupported && (
+                isPiPSupported && !isMobile && (
                     <button
                         onClick={onTogglePictureInPicture}
                         className="btn-icon"

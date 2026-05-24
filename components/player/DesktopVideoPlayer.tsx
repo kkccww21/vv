@@ -682,6 +682,7 @@ export function DesktopVideoPlayer({
             // Portal container
             containerRef={containerRef}
             episodeName={episodeName}
+            totalEpisodes={totalEpisodes}
           />
 
             <DesktopControlsWrapper
